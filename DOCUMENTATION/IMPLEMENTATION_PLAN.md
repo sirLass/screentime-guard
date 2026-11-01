@@ -76,23 +76,23 @@ Companion to `PRD.md`. This document turns the PRD into an ordered, checkable bu
 *Covers: storage layer, shared types, migrations.*
 
 ### Shared types and utilities
-- [ ] 🔴 Define TypeScript types in `packages/shared`: `Settings`, `Rule`, `Extension` (time grant), `UsageDay`, `Session` (PRD 7.5)
-- [ ] 🔴 Write a **domain normalization** helper (lowercase, strip `www.`, extract registrable domain, handle ports and IPs)
-- [ ] 🔴 Write a **domain matching** helper (rule `youtube.com` matches `m.youtube.com` and `music.youtube.com`)
-- [ ] 🟡 Write date helpers (`today()` in local time, day rollover detection, day-of-week)
-- [ ] 🟡 Write validation (zod or hand-rolled) for rules: domain format, limit 0 to 1440, valid time windows
-- [ ] 🔴 Unit tests for all helpers (include edge cases: IDN domains, `localhost`, `chrome://`, `about:blank`, extension pages)
+- [x] 🔴 Define TypeScript types in `packages/shared`: `Settings`, `Rule`, `Extension` (time grant), `UsageDay`, `Session` (PRD 7.5) — `src/types.ts`; named `TimeExtension` instead of PRD's `Extension` (avoids clashing with the extension concept)
+- [x] 🔴 Write a **domain normalization** helper (lowercase, strip `www.`, extract registrable domain, handle ports and IPs) — `src/domain.ts` (`parseHost`, `registrableDomain`, `usageDomainKey`); rejects non-http(s) schemes so `chrome://` pages can never become domains
+- [x] 🔴 Write a **domain matching** helper (rule `youtube.com` matches `m.youtube.com` and `music.youtube.com`) — `src/domain.ts` (`matchesDomain`); label-boundary-safe (`notyoutube.com` never matches)
+- [x] 🟡 Write date helpers (`today()` in local time, day rollover detection, day-of-week) — `src/date.ts` (local day keys, `hasDayRolled`, `dayOfWeek`, midnight alarms, time-window checks)
+- [x] 🟡 Write validation (zod or hand-rolled) for rules: domain format, limit 0 to 1440, valid time windows — hand-rolled `src/validate.ts` (zero-dependency budget decision)
+- [x] 🔴 Unit tests for all helpers (include edge cases: IDN domains, `localhost`, `chrome://`, `about:blank`, extension pages) — 50 tests, coverage 90%+ enforced in `vitest.config.ts`
 
 ### Storage layer
-- [ ] 🔴 Create a typed `storage.ts` wrapper over `chrome.storage.local` (get/set/update with defaults)
-- [ ] 🔴 Add **schema versioning** (`schemaVersion`) and a migration runner
-- [ ] 🟡 Add atomic update helper to avoid race conditions between popup/options and the service worker
-- [ ] 🟡 Add a storage **change listener** utility so UI reacts to updates
-- [ ] 🔴 Unit tests: defaults, migrations (v1 to v2 sample), concurrent updates
+- [x] 🔴 Create a typed `storage.ts` wrapper over `chrome.storage.local` (get/set/update with defaults) — `apps/extension/lib/storage.ts` with a injectable `StorageArea` (Map-fake tested)
+- [x] 🔴 Add **schema versioning** (`schemaVersion`) and a migration runner — `SCHEMA_VERSION = 2`, pure `migrateStore` (deep-clones, newer-version data never downgraded) + `ensureSchema`
+- [x] 🟡 Add atomic update helper to avoid race conditions between popup/options and the service worker — per-key promise queue in `updateStore` (100 concurrent increments test passes)
+- [x] 🟡 Add a storage **change listener** utility so UI reacts to updates — typed `onStoreChanged` (filtered to `local`, returns unsubscribe)
+- [x] 🔴 Unit tests: defaults, migrations (v1 to v2 sample), concurrent updates — storage tests incl. corrupt-slice repair and reset path
 
 ### Messaging
-- [ ] 🟡 Define a typed message protocol between UI and background (e.g., `GET_STATUS`, `ADD_RULE`, `VERIFY_PIN`, `GRANT_EXTENSION`)
-- [ ] 🟡 Validate message senders (only extension pages may send privileged messages)
+- [x] 🟡 Define a typed message protocol between UI and background (e.g., `GET_STATUS`, `ADD_RULE`, `VERIFY_PIN`, `GRANT_EXTENSION`) — `apps/extension/lib/messages.ts` (`BackgroundRequest`/`BackgroundResponse` unions, `sendToBackground` with null-safe degrade)
+- [x] 🟡 Validate message senders (only extension pages may send privileged messages) — pure `isPrivilegedSender`; content scripts (same sender id, web URL) and foreign extensions explicitly tested as rejected
 
 **DoD (M1):** shared package builds, storage wrapper and helpers have 90%+ test coverage, CI green.
 
@@ -531,4 +531,4 @@ If a week slips, cut from the 🟢 items first, then 🟡, never from 🔴.
 
 ---
 
-*Last updated: November 1, 2026. Review this plan at the end of each phase and adjust estimates based on actual velocity.*
+*Last updated: November 1, 2026 (M1 Foundation complete). Review this plan at the end of each phase and adjust estimates based on actual velocity.*
