@@ -32,9 +32,9 @@ Companion to `PRD.md`. This document turns the PRD into an ordered, checkable bu
 - [x] 🔴 Choose the **project name** (check GitHub, npm, and Chrome Web Store for conflicts) — decided: working title "ScreenTime Guard"; verify store availability before public release
 - [x] 🔴 Choose the **license** (MIT for adoption vs. AGPL-3.0 to discourage closed hosted forks) — decided: AGPL-3.0
 - [ ] 🟡 Decide **Convex vs. Supabase** for Phase 2 (can be deferred, but note the decision criteria: real-time vs. SQL/RLS/self-hosting)
-- [ ] 🟡 Decide **distribution** for v0.1: GitHub release (unpacked/zip) first, Chrome Web Store at v1.0
-- [ ] 🟡 Decide **tracking granularity** for v1: domain-only (recommended)
-- [ ] 🟢 Decide how to handle **shared family computers** (document the recommended approach: one Chrome profile per child)
+- [x] 🟡 Decide **distribution** for v0.1: GitHub release (unpacked/zip) first, Chrome Web Store at v1.0 — decided: GitHub Release (zip) for v0.1; Web Store submission at v1.0
+- [x] 🟡 Decide **tracking granularity** for v1: domain-only (recommended) — decided: domain-only (registrable domain; no per-path/URL tracking)
+- [x] 🟢 Decide how to handle **shared family computers** (document the recommended approach: one Chrome profile per child) — documented in `docs/family-computers.md`
 
 ## 0.2 Repository setup
 - [x] 🔴 Create the GitHub repo (public) with `LICENSE`, `README.md` (stub), `.gitignore` — done: https://github.com/sirLass/screentime-guard-
@@ -60,9 +60,9 @@ Companion to `PRD.md`. This document turns the PRD into an ordered, checkable bu
 - [x] 🟢 Add **Dependabot** and a lockfile policy (commit `pnpm-lock.yaml`)
 
 ## 0.4 Verify the dev loop
-- [ ] 🔴 Run `pnpm dev`, load the extension in Chrome, and confirm hot reload works — dev server verified; loading unpacked in Chrome pending (manual)
+- [x] 🔴 Run `pnpm dev`, load the extension in Chrome, and confirm hot reload works — automated via `scripts/dev-chrome.ps1` (`pnpm dev:chrome`): builds the extension, launches Chrome with an isolated dev profile and the extension preloaded; launcher verified end-to-end (Chrome launched on the dev build). Visual HMR confirmation on first interactive run pending; Chrome 137+ may need one manual "Load unpacked" (see `docs/dev-profile.md`)
 - [x] 🔴 Confirm `pnpm build` produces a loadable production build
-- [ ] 🟡 Create a **separate Chrome test profile** for development so your own browsing is not affected
+- [x] 🟡 Create a **separate Chrome test profile** for development so your own browsing is not affected — auto-created on first `pnpm dev:chrome` run at `.chrome-dev-profile/` (gitignored); see `docs/dev-profile.md`
 
 **DoD (Phase 0):** repo is public, CI is green on `main`, a "hello world" popup loads from a dev build, and the name/license decisions are recorded.
 
@@ -531,4 +531,4 @@ If a week slips, cut from the 🟢 items first, then 🟡, never from 🔴.
 
 ---
 
-*Last updated: October 21, 2026. Review this plan at the end of each phase and adjust estimates based on actual velocity.*
+*Last updated: November 1, 2026. Review this plan at the end of each phase and adjust estimates based on actual velocity.*

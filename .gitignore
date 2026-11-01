@@ -7,6 +7,9 @@ dist/
 .wxt/
 *.tsbuildinfo
 
+# Chrome dev profile (see docs/dev-profile.md)
+.chrome-dev-profile/
+
 # Coverage
 coverage/
 
